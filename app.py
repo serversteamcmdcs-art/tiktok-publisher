@@ -44,10 +44,4 @@ def publish():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=port)
-```
 
-Нажми **Commit** → **Manual Deploy** → подожди 3 мин.
-
-Потом открой в браузере:
-```
-https://tiktok-uploader.onrender.com/check
