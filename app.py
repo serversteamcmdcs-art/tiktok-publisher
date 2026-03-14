@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-import os, requests, time
+import os, requests
 
 app = Flask(__name__)
 
@@ -15,16 +15,20 @@ def publish():
         caption = data.get('caption', '')
         sessionid = data.get('sessionid', '')
 
+        if not video_url:
+            return jsonify({'error': 'video_url required'}), 400
+
         # Скачай видео
         r = requests.get(video_url, timeout=60)
         with open('/tmp/video.mp4', 'wb') as f:
             f.write(r.content)
 
+        # Загрузи в TikTok
         from tiktokautouploader import upload_tiktok
         upload_tiktok(
             video='/tmp/video.mp4',
             description=caption,
-            cookies={'sessionid': sessionid},
+            sessionid=sessionid,
             headless=True
         )
 
