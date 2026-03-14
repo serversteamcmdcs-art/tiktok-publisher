@@ -19,24 +19,22 @@ def publish():
         data = request.get_json(force=True)
         video_url = data.get('video_url')
         caption = data.get('caption', '')
-        sessionid = data.get('sessionid', '')
+        accountname = data.get('accountname', '')
 
         r = requests.get(video_url, timeout=60)
         with open('/tmp/video.mp4', 'wb') as f:
             f.write(r.content)
 
-        with open('/tmp/cookies.txt', 'w') as f:
-            f.write(f'[{{"name":"sessionid","value":"{sessionid}","domain":".tiktok.com"}}]')
-
         from tiktokautouploader import upload_tiktok
-        upload_tiktok(
+        result = upload_tiktok(
             video='/tmp/video.mp4',
             description=caption,
-            cookies='/tmp/cookies.txt',
-            headless=True
+            accountname=accountname,
+            headless=True,
+            suppressprint=False
         )
 
-        return jsonify({'status': 'published'})
+        return jsonify({'status': 'published', 'result': result})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -44,4 +42,3 @@ def publish():
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 3000))
     app.run(host='0.0.0.0', port=port)
-
